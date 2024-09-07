@@ -20,4 +20,35 @@ class PostController extends Controller
     Post::create($data);
     return redirect('/');
    }
+
+   public function editPost(Post $post){
+    if(auth()->user()->id!=$post['user_id']){
+        return redirect('/');
+    }
+    return view('edit-post',['post' => $post]);
+   }
+
+   public function updatePost(Request $request ,Post $post){
+    if(auth()->user()->id !== $post['user_id']){
+        return redirect('/');
+    }
+
+    $data= request()->validate([
+    'title'=>"required",
+    'body'=>'required'
+    ]);
+
+    $data['title']= strip_tags($data['title']);
+    $data['body']=strip_tags($data['body']);
+
+    $post->update(($data));
+    return redirect('/');
+   }
+
+   public function deletePost(Post $post){
+    if(auth()->user()->id === $post['user_id']){
+        $post->delete();
+    }
+    return redirect('/');
+   }
 }
